@@ -31,14 +31,39 @@ class BdtIntiController extends VoyagerBaseController
 
                 // If search query, use LIKE to filter results depending on field label
                 if ($search) {
-                    $total_count = app($options->model)
-                        ->where('kode', 'LIKE', '%'.$search.'%')
-                        ->orWhere('nama', 'LIKE', '%'.$search.'%')
-                        ->count();
-                    $relationshipOptions = app($options->model)->take($on_page)->skip($skip)
-                        ->where('kode', 'LIKE', '%'.$search.'%')
-                        ->orWhere('nama', 'LIKE', '%'.$search.'%')
-                        ->get();
+
+                    // $total_count = app($options->model)
+                    //     ->where('kode', 'LIKE', '%'.$search.'%')
+                    //     ->orWhere('nama', 'LIKE', '%'.$search.'%')
+                    //     ->count();
+                    // $relationshipOptions = app($options->model)->take($on_page)->skip($skip)
+                    //     ->where('kode', 'LIKE', '%'.$search.'%')
+                    //     ->orWhere('nama', 'LIKE', '%'.$search.'%')
+                    //     ->get();
+
+                    $details_search = $this->searchRelation($rows, $options->column);
+
+                    if(isset($details_search->details->search)){
+                        $search_fields = $details_search->details->search;
+                        
+                        $total_count = app($options->model);
+                        $relationshipOptions = app($options->model)->take($on_page)->skip($skip);
+
+                        foreach ($search_fields as $key_field => $search_field) {
+                            $total_count = $total_count->orWhere($search_field, 'LIKE', '%'.$search.'%');
+                            $relationshipOptions = $relationshipOptions->orWhere($search_field, 'LIKE', '%'.$search.'%');
+                        }
+
+                        $total_count = $total_count->count();
+                        $relationshipOptions = $relationshipOptions->get();
+
+                    }else{
+                        $total_count = app($options->model)->where($options->label, 'LIKE', '%'.$search.'%')->count();
+                        $relationshipOptions = app($options->model)->take($on_page)->skip($skip)
+                            ->where($options->label, 'LIKE', '%'.$search.'%')
+                            ->get();
+                    }
+
                 } else {
                     $total_count = app($options->model)->count();
                     $relationshipOptions = app($options->model)->take($on_page)->skip($skip)->get();
@@ -63,5 +88,17 @@ class BdtIntiController extends VoyagerBaseController
 
         // No result found, return empty array
         return response()->json([], 404);
+    }
+
+    private function searchRelation($array, $field)
+    {
+        $item = null;
+        foreach($array as $struct) {
+            if ($field == $struct->field) {
+                $item = $struct;
+                break;
+            }
+        }
+        return $item;
     }
 }
