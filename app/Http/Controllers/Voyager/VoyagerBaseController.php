@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Bdt;
+namespace App\Http\Controllers\Voyager;
 
-use Illuminate\Http\Request;
+use TCG\Voyager\Http\Controllers\VoyagerBaseController as BaseVoyagerBaseController;
 use TCG\Voyager\Facades\Voyager;
-use TCG\Voyager\Http\Controllers\VoyagerBaseController;
+use Illuminate\Http\Request;
 
-class BdtIntiController extends VoyagerBaseController
+class VoyagerBaseController extends BaseVoyagerBaseController
 {
     /**
      * Get BREAD relations data.
@@ -31,16 +31,6 @@ class BdtIntiController extends VoyagerBaseController
 
                 // If search query, use LIKE to filter results depending on field label
                 if ($search) {
-
-                    // $total_count = app($options->model)
-                    //     ->where('kode', 'LIKE', '%'.$search.'%')
-                    //     ->orWhere('nama', 'LIKE', '%'.$search.'%')
-                    //     ->count();
-                    // $relationshipOptions = app($options->model)->take($on_page)->skip($skip)
-                    //     ->where('kode', 'LIKE', '%'.$search.'%')
-                    //     ->orWhere('nama', 'LIKE', '%'.$search.'%')
-                    //     ->get();
-
                     $details_search = $this->searchRelation($rows, $options->column);
 
                     if(isset($details_search->details->search)){
