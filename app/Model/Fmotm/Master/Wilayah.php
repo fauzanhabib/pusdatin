@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\Master;
+namespace App\Model\Fmotm\Master;
 
 use Illuminate\Database\Eloquent\Model;
 
